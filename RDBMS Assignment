@@ -1,0 +1,95 @@
+mysql> create database dbms_assignment;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> use dbms_assignment;
+Database changed
+
+mysql> create table Product (
+    -> pid varchar(15) NOT NULL,
+    -> price int,
+    -> name varchar(20),
+    -> CONSTRAINT PK_Product PRIMARY KEY (pid)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> create table Cart (
+    -> pid varchar(15) NOT NULL,
+    -> quantity int,
+    -> FOREIGN KEY (pid) REFERENCES Product(pid)
+    -> );
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> insert into Product (pid, price, name)
+    -> values ('1001 Arunesh', 150, "Reynolds 405");
+
+mysql> insert into Product (pid, price, name) values ('1002 Arunesh', 120, "Cello pen");
+Query OK, 1 row affected (0.00 sec)
+
+mysql> insert into Product (pid, price, name) values ('1003 Arunesh', 170, "NoteBook");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into Product (pid, price, name) values ('1004 Arunesh', 100, "Draw Sheet");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into Product (pid, price, name) values ('1005 Arunesh', 70, "Crayons");
+Query OK, 1 row affected (0.01 sec)
+
+mysql> select *from Product;
++--------------+-------+--------------+
+| pid          | price | name         |
++--------------+-------+--------------+
+| 1001 Arunesh |   150 | Reynolds 405 |
+| 1002 Arunesh |   120 | Cello pen    |
+| 1003 Arunesh |   170 | NoteBook     |
+| 1004 Arunesh |   100 | Draw Sheet   |
+| 1005 Arunesh |    70 | Crayons      |
++--------------+-------+--------------+
+5 rows in set (0.00 sec)
+
+
+mysql> insert into 
+    -> Cart(pid,quantity)
+    -> values
+    -> ('1001 Arunesh', 18),
+    -> ('1002 Arunesh', 12),
+    -> ('1003 Arunesh', 7),
+    -> ('1004 Arunesh', 21),
+    -> ('1005 Arunesh', 3);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select *from Cart;
++--------------+----------+
+| pid          | quantity |
++--------------+----------+
+| 1001 Arunesh |       18 |
+| 1002 Arunesh |       12 |
+| 1003 Arunesh |        7 |
+| 1004 Arunesh |       21 |
+| 1005 Arunesh |        3 |
++--------------+----------+
+5 rows in set (0.00 sec)
+
+mysql> set @total =0;
+
+mysql> Select Product.pid, Product.name, Product.price, Cart.quantity,Product.price * Cart.quantity AS TOTAL, (@total := @total + (Product.price * Cart.quantity)) AS SUM from Product JOIN Cart on Product.pid = Cart.pid GROUP BY Product.pid, Product.name, Product.price, Cart.quantity, TOTAL;
+Query OK, 0 rows affected (0.00 sec)
+
++--------------+--------------+-------+----------+-------+------+
+| pid          | name         | price | quantity | TOTAL | SUM  |
++--------------+--------------+-------+----------+-------+------+
+| 1001 Arunesh | Reynolds 405 |   150 |       18 |  2700 | 2700 |
+| 1002 Arunesh | Cello pen    |   120 |       12 |  1440 | 4140 |
+| 1003 Arunesh | NoteBook     |   170 |        7 |  1190 | 5330 |
+| 1004 Arunesh | Draw Sheet   |   100 |       21 |  2100 | 7430 |
+| 1005 Arunesh | Crayons      |    70 |        3 |   210 | 7640 |
++--------------+--------------+-------+----------+-------+------+
+5 rows in set, 1 warning (0.00 sec)
+
+mysql> Select @total AS Cart_Total;
++------------+
+| Cart_Total |
++------------+
+|       7640 |
++------------+
+1 row in set (0.00 sec)
